@@ -68,11 +68,23 @@ class UserController extends Controller
         }
 
         // Insere usuários na base de dados
-        $userSaved = User::insert($datasUser);
-        dd($datasUser);
+        User::insert($datasUser);
+        $lastRecord = User::orderBy('id', 'DESC')->first();
 
-        // Redireciona e feed back a front end
-        return redirect('user')->with('message', 'Usuário adicionado com éxito!');
+        // Verifica se api esta on line
+        $result = (new ApiController)->store($lastRecord, $datasUser);
+        $statusCodeApi = $result->getStatusCode();
+
+        // Verifica se foi possível registrar usuário na api
+        if($statusCodeApi === 200){
+            // Redireciona e feed back a front end se registro bem sucedido
+            return redirect('user')->with('message', 'Usuário adicionado com éxito!');
+
+        } else {
+            // Se api não responde, deleta registro do banco local e informa usuário
+            $this->destroyApi($lastRecord);
+            return redirect('user')->with('message', 'Usuário não pode ser cadastrado, tente novamente mais tarde!');
+        }
     }
 
     public function show(UserController $user)
@@ -125,25 +137,64 @@ class UserController extends Controller
             $datasUser['avatar']=$request->file('avatar')->store('uploads', 'public');
         }
 
-        // Atualiza dados de usuário
-        User::where('id','=', $user)->update($datasUser);
-        $userDatas = User::findOrFail($user);
+        // Verifica se ocorreu alteração no nível de acesso
+        $userAccessDB = User::findOrFail($user);
+        $statusCodeApi = 0;
+        if($userAccessDB->access_level != $request->access_level) {
+            
+            if($request->access_level === 'pro'){
+                $result = (new ApiController)->downgrade($userAccessDB->id);
+                $statusCodeApi = $result->getStatusCode();
+            } else {
+                $result = (new ApiController)->upgrade($userAccessDB->id);
+                $statusCodeApi = $result->getStatusCode();
+            }
+        }
+
+        // Verifica se foi possível registrar usuário na api
+        if($statusCodeApi === 200) {
+            // Atualiza dados de usuário
+            User::where('id','=', $user)->update($datasUser);
+            $userDatas = User::findOrFail($user);
+            
+            // Redireciona e feed back a front end se registro bem sucedido
+            return redirect('user')->with('message', 'Usuário alterado com éxito!');
+
+        } else {
+            // Se api não responde, deleta registro do banco local e informa usuário
+            return redirect('user')->with('message', 'Usuário não pode ser alterado, tente novamente mais tarde!');
+        }
         
         // Redireciona e feed back a front end
         return redirect('user')->with('message', 'Usuário alterado com éxito!');
     }
 
+    public function destroyApi($lastRecord) {
+        // Procura usuário na base de dados e apaga se api estiver off line
+        User::findOrFail($lastRecord);
+    }
+
     public function destroy($user)
     {
+        
         // Procura usuário na base de dados
         $userDatas = User::findOrFail($user);
-        
-        // Remove arquivo de foto se existir
-        if(Storage::delete('public/'.$userDatas->avatar)) {
-             User::destroy($user);
-        }
+        // Verifica se a solicitação de remoção é diferente do administrador
+        if($user != 1) {
+            // Remove arquivo de foto se existir
+            if(Storage::delete('public/'.$userDatas->avatar)) {
+                User::destroy($user);
+            }
+            
+            // Deleta usuário
+            User::destroy($user);
 
-        // Redireciona e feed back a front end
-        return redirect('user')->with('message', 'Usuário removido com éxito!');
+            // Redireciona e feed back a front end
+            return redirect('user')->with('message', 'Usuário removido com éxito!');
+        } else {
+            // Informa que usuário administrador não pode ser removido
+            return redirect('user')->with('message', 'Usuário administrador não pode ser removido!');
+        }
+        
     }
 }

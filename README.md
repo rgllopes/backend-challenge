@@ -2,12 +2,11 @@
 
 ### Ferramentas utilizadas
 
-- UBUNTU 20.04
-- PHP 7.4
-- Framework Laravel 8
-- mysql  Ver 8.0.28-0ubuntu0.20.04.3 for Linux on x86_64 ((Ubuntu))
-- guzzleHttp 7.4
-- Frontend baseado no painel admin: https://github.com/oryfikry/laravel-8-boilerplate
+- UBUNTU version 20.04 LTS
+- PHP version 7.4
+- mysql  version 8.0.28-0
+- Framework Laravel 8: https://laravel.com/docs/8.x
+- guzzleHttp 7.4: https://docs.guzzlephp.org/en/stable/
 
 ### Para instalação
 
@@ -15,7 +14,10 @@
 ```
 https://getcomposer.org/
 ```
-
+** Necessário npm(Node.js) **
+```
+https://nodejs.org/en/download/
+```
 * Fazer o download do projeto
 ```
 git clone https://github.com/rgllopes/backend-challenge.git
@@ -31,6 +33,12 @@ BASE_URI_MLEARN="https://api.staging.mlearn.mobi"
 composer install
 ```
 
+* Rodar npm para instalação de dependências
+```
+npm install && npm run dev
+```
+#### OBS: pode ser necessário rodar "npm run dev" (sem aspas) uma segunda vez para atualização de scaffold
+
 * Gerar chave de acesso laravel "Key generate"
 ```
 php artisan key:generate
@@ -38,13 +46,13 @@ php artisan key:generate
 
 * Criar uma base de dados em MySQL com o nome de sua escolha
 
-* Configurar arquivo .env com dados de acesso a base de dados
-DB_CONNECTION='mysql'
-DB_HOST='127.0.0.1'
-DB_PORT='3306'
-DB_DATABASE='laravel'
-DB_USERNAME='root'
-DB_PASSWORD=''
+* Configurar arquivo .env com os dados de acesso de sua base de dados crada anteriormente:<br>
+DB_CONNECTION='mysql'</br>
+DB_HOST='127.0.0.1'</br>
+DB_PORT='3306'</br>
+DB_DATABASE='laravel'</br>
+DB_USERNAME='root'</br>
+DB_PASSWORD=''</br>
 
 * Realizar a migração das tabelas para sua base de dados
 ```

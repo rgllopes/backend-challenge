@@ -3,6 +3,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -15,6 +16,8 @@ use App\Http\Controllers\UserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('api/{id}', [ApiController::class, 'index']);
 
 // Pagina inicial se não tiver login
 Route::get('/', function () {return view('auth.login');});

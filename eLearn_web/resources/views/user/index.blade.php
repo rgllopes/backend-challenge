@@ -4,10 +4,10 @@
 
 
 @if(Session::has('message'))
-    <div class="alert alert-success alert-dismissible" role="alert">
+    <div class="alert alert-warning alert-dismissible" role="alert">
         {{ Session::get('message') }}
     </div>
-@endif    
+@endif
 
 <a href="{{ url('user/create') }}" class="btn btn-info">Adicionar usuário</a>
 <br>
