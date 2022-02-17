@@ -46,11 +46,11 @@ class ApiController extends Controller
         ];
 
         $postInput = [
-            'msisdn'        => $datasUser->msisdn,
-            'name'          => $datasUser->name,
-            'access_level'  => $datasUser->access_level,
-            'password'      => $datasUser->password,
-            'external_id'   => $lastRecord
+            'msisdn'        => $datasUser['msisdn'],
+            'name'          => $datasUser['name'],
+            'access_level'  => $datasUser['access_level'],
+            'password'      => $datasUser['password'],
+            'external_id'   => $lastRecord['id']
         ];
 
         $response = Http::withHeaders($headers)->post(env('BASE_URI_MLEARN').$endPoint, $postInput);
