@@ -1,10 +1,9 @@
 <?php
 
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,14 +16,18 @@ use App\Http\Controllers\UsersController;
 |
 */
 
-Route::get('/', function () {
-    return redirect()->action([HomeController::class, 'index']);
+// Pagina inicial se não tiver login
+Route::get('/', function () {return view('auth.login');});
+
+// Rotas usuários protegidas por middleware
+Route::resource('user', UserController::class)->middleware(('auth'));
+
+// Remove rotas de registro e reset senha
+Auth::routes(['register'=>false, 'reset'=>false]);
+
+Route::get('/home', [UserController::class, 'index'])->name('home');
+
+// Rotas protegidas por middleware
+Route::group(['middleware' => 'auth'], function() { 
+    Route::get('/', [userController::class, 'index'])->name('home');
 });
-
-Auth::routes();
-
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::get('/user', [UserController::class, 'index'])->name('user.index');
-
-// Route::get('/user.get_data',[UserController::class, 'get_data'])->name('get_data');
-Route::resource('users', UsersController::class);

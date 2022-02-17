@@ -8,11 +8,6 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateUsersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
@@ -21,25 +16,31 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('avatar')->nullable(true);
             $table->string('password');
-            $table->integer('access_level');
+            $table->string('access_level');
             $table->rememberToken();
             $table->timestamps();
         });
 
-        //Insert record in the table
+        // Insere registro de administrador ao realizar migrate
         DB::table('users')->insert([
             [
-                'msisdn'        => "+5551999999999",
-                'name'          => "Admin",
+                'msisdn'        => '+5551000000000',
+                'name'          => 'Admin',
                 'email'         => 'admin@admin.com',
-                'access_level'  => 2,
+                'access_level'  => 'premium',
                 'password'      => Hash::make("12345678"),
                 "created_at"    => \Carbon\Carbon::now(),
             ],
         ]);
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
         Schema::dropIfExists('users');
